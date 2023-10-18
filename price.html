@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Price selector</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    />
+    
+  </head>
+
+  <body>
+    <span>
+      <span>
+        
+      </span>
+    </span>
+    <div class="container">
+      <h1>Pricing</h1>
+      <p>Select the price range which you prefer</p>
+      <div id="carouselExample" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <div class="row">
+              <div class="col-lg-4">
+                <div class="card card1">
+                  <div class="card-body">
+                    <h5 class="card-title">Pricing Option 1</h5>
+                    <p>0-10</p>
+                    
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      data-toggle="modal"
+                      data-target="#pricingModal">
+                      Select
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card2">
+                  <div class="card-body">
+                    <h5 class="card-title">Pricing Option 2</h5>
+                    <p>10-20</p>
+                    
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      data-toggle="modal"
+                      data-target="#pricingModal"
+                    >
+                      Select
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card3">
+                  <div class="card-body">
+                    <h5 class="card-title">Pricing Option 3</h5>
+                    <p>20-30</p>
+                   
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      data-toggle="modal"
+                      data-target="#pricingModal"
+                    >
+                      Select
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="input_range">
+          <input
+            type="range"
+            min="0"
+            max="30"
+            step="10"
+            id="priceSlider"
+            class="form-range"
+            oninput="highlightPrice()"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="modal fade"
+      id="pricingModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="pricingModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="pricingModalLabel">Order Details</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="orderForm">
+              <div class="form-group">
+                <label for="name">Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="name"
+                  name="firstname"
+                  placeholder="Enter your name"
+                />
+              </div>
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="email"
+                  name="email"
+                  placeholder="Enter your email"
+                />
+              </div>
+              <div class="form-group">
+                <label for="comments">Order Comments</label>
+                <textarea
+                  class="form-control"
+                  id="comments"
+                  rows="3"
+                  name="message"
+                  placeholder="Enter any comments"
+                ></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="submitForm()"
+            >
+              Submit
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <script>
+      const priceSlider = document.getElementById("priceSlider");
+
+      function highlightPrice() {
+        const selectedValue = parseInt(priceSlider.value, 10);
+
+        document.querySelectorAll(".card").forEach((card) => {
+          card.querySelector(".card-body").style.opacity = "1";
+        });
+
+        if (selectedValue >= 0 && selectedValue < 10) {
+          document.querySelector(".card2 .card-body").style.opacity = "0.6";
+          document.querySelector(".card3 .card-body").style.opacity = "0.6";
+        } else if (selectedValue >= 10 && selectedValue < 20) {
+          document.querySelector(".card1 .card-body").style.opacity = "0.6";
+          document.querySelector(".card3 .card-body").style.opacity = "0.6";
+        } else if (selectedValue >= 20 && selectedValue <= 30) {
+          document.querySelector(".card1 .card-body").style.opacity = "0.6";
+          document.querySelector(".card2 .card-body").style.opacity = "0.6";
+        }
+      }
+
+      function submitForm() {
+        const formData = new FormData(document.getElementById("orderForm"));
+        const url = "https://forms.maakeetoo.com/formapi/704";
+        const accessCode = "VQ9NCI4IMR7J9BOWEG1D9VM6O";
+
+        const urlWithAccessCode = `${url}?accesscode=${accessCode}`;
+
+        fetch(urlWithAccessCode, {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log("Form submitted successfully:", data);
+          })
+          .catch((error) => {
+            console.error("Error submitting form:", error);
+          });
+      }
+
+      priceSlider.addEventListener("input", () => {
+        highlightPrice();
+      });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  </body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lazy Loading Images from Unsplash API</title>
+    <style>
+        /* Style for the result container */
+        #resultsContainer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        /* Style for each result item */
+        .result {
+            width: 300px;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        /* Hover effect for result items */
+        .result:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Style for the result image */
+        .result img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lazy Loading Images from Unsplash API</h1>
+
+    <!-- Container for results -->
+    <div id="resultsContainer"></div>
+
+    <!-- JavaScript for lazy loading -->
+    <script>
+        let page = 1;
+        let isLoading = false;
+
+        function fetchResults() {
+            if (isLoading) return;
+            isLoading = true;
+
+            fetch(`https://api.unsplash.com/photos?page=${page}&per_page=10&client_id=DJLppnYNJH1do3dJB3SechoaJnPgn9YZ3ZkyKfWV9WI`)
+                .then(response => response.json())
+                .then(data => {
+                    const resultsContainer = document.getElementById("resultsContainer");
+                    data.forEach(photo => {
+                        
+                        const resultDiv = document.createElement("div");
+                        resultDiv.classList.add("result");
+
+                       
+                        const img = document.createElement("img");
+                        img.src = photo.urls.regular;
+                        img.alt = photo.description || "Image";
+
+                        
+                        resultDiv.appendChild(img);
+
+                        
+                        resultsContainer.appendChild(resultDiv);
+                    });
+                    page++;
+                    isLoading = false;
+                })
+                .catch(error => {
+                    console.error("Error loading results:", error);
+                    isLoading = false;
+                });
+        }
+
+        // Initial load
+        fetchResults();
+
+        
+        window.addEventListener('scroll', () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+                fetchResults();
+            }
+        });
+    </script>
+</body>
+</html>
